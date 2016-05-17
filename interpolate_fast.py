@@ -1,8 +1,6 @@
 import numpy as np
 import interpolate_slow
 
-
-
 def construct_vertices(xy , uv):
     """
     Preparation method for fast interpolation. This method calculates vertices and weights once, such that

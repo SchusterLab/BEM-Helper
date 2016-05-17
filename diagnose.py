@@ -67,7 +67,7 @@ class Residuals:
 
     def calculate_residual(self, solution):
         return solution
-  
+
     def monitor_conjugate_gradient_residual(self, solution):
         residual = self.calculate_residual(solution)
         self.append_residual(residual)
