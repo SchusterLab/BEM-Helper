@@ -1,4 +1,4 @@
-from numpy import *
+import numpy as np
 from tabulate import tabulate
 
 class Timer:
@@ -35,7 +35,7 @@ class Timer:
         # Sort the entries in the report according to the times.
         Z = sorted(zip(X1,Y), key=lambda a_entry: a_entry[1])
 
-        print tabulate(zip(array(Z)[:,0], array(array(Z)[:,1], dtype=float)),
+        print tabulate(zip(np.array(Z)[:,0], np.array(np.array(Z)[:,1], dtype=float)),
                        headers=["Operation", 'Time (s)'],
                        tablefmt="rst", floatfmt=".3f", numalign="center", stralign='left')
 
@@ -67,8 +67,36 @@ class Residuals:
 
     def calculate_residual(self, solution):
         return solution
-        #return dot(self.lhs.weakform(), solution) - self.rhs
-
+  
     def monitor_conjugate_gradient_residual(self, solution):
         residual = self.calculate_residual(solution)
         self.append_residual(residual)
+
+class ElementCoordinates:
+    def __init__(self, verbose=False):
+        self.verbose = verbose
+
+    def get_element_coordinates(self, elements, domain_indices):
+        for k in np.unique(domain_indices):
+            # Select elements with domain index k
+            indices = np.where(domain_indices == k)[0]
+            xs, ys, zs = np.array([]), np.array([]), np.array([])
+            for l in indices:
+                xs = np.append(xs, elements[l].geometry.corners[0,:])
+                ys = np.append(ys, elements[l].geometry.corners[1,:])
+                zs = np.append(zs, elements[l].geometry.corners[2,:])
+
+            setattr(self, "PhysicalGroup%d"%k, {"x" : xs, "y" : ys, "z" : zs})
+
+    def get_two_variables(self, x, y, z):
+        constant_coordinate = [len(np.unique(np.diff(k)))==1 for k in [x, y, z]]
+        if self.verbose:
+            print "{:s} is constant".format(np.array(['x', 'y', 'z'])[np.array(constant_coordinate)][0])
+        coordinates = np.arange(0,3)[np.logical_not(constant_coordinate)]
+        non_constant = np.array([x,y,z])[coordinates]
+        return non_constant[0], non_constant[1]
+
+    def get_unique_points(self, x, y, z):
+        x1, x2 = self.get_two_variables(x, y, z)
+        unique_points, unique_indices = np.unique(x1 + 1j*x2, return_index=True)
+        return x1[unique_indices], x2[unique_indices]
