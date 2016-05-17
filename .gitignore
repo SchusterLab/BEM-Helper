@@ -46,3 +46,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.pyc
+*.xml
+.idea/Modules.iml
+*.name
