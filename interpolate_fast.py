@@ -41,14 +41,14 @@ def construct_vertices_from_grid(c, filename, physical_group):
     x1_unique, x2_unique = c.get_unique_points(physical_group['x'], physical_group['y'], physical_group['z'])
     #print x1_unique.shape, x2_unique.shape
 
-    XY_eval = hstack((x1_unique.reshape(x1_unique.shape[0],1), x2_unique.reshape(x2_unique.shape[0],1)))
+    XY_eval = np.hstack((x1_unique.reshape(x1_unique.shape[0],1), x2_unique.reshape(x2_unique.shape[0],1)))
     # Then we need the FEM mesh points, make sure we get the right corresponding surface.
     elements, nodes, elem_solution = interpolate_slow.get_maxwell_boundary_data(filename)
     xdata, ydata, Udata = interpolate_slow.prepare_for_interpolation(elements, nodes, elem_solution)
 
-    XY_data = hstack((xdata.reshape(xdata.shape[0],1), ydata.reshape(ydata.shape[0],1)))
+    XY_data = np.hstack((xdata.reshape(xdata.shape[0],1), ydata.reshape(ydata.shape[0],1)))
     # Evaluate the vertices and weights at the BEM mesh points specified in XY_eval
-    vertices, weights = construct_vertices(XY_data, XY_eval)
+    vertices, weights = construct_vertices_from_coordinates(XY_data, XY_eval)
 
     return vertices, weights, XY_eval, Udata
 
