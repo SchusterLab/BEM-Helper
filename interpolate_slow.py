@@ -197,11 +197,11 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
         plt.figure(figsize=(7.,4.))
         plt.title("Cubic interpolation of solution on unique nodes")
         if isinstance(xeval, np.float):
-            plt.plot(yeval, f, **kwarg)
+            plt.plot(yeval, f[0], **kwarg)
             plt.xlim(min(yeval), max(yeval))
             plt.xlabel("{} (mm)".format(plot_axes[1]))
         else:
-            plt.plot(xeval, f, **kwarg)
+            plt.plot(xeval, f[0], **kwarg)
             plt.xlim(min(xeval), max(xeval))
             plt.xlabel("{} (mm)".format(plot_axes[0]))
     else:
