@@ -194,7 +194,7 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
     f = interpolate.griddata(zip(xdata, ydata), Udata, (X_eval, Y_eval) , method='cubic')
 
     if isinstance(xeval, np.float) or isinstance(yeval, np.float):
-        plt.figure(figsize=(7.,4.))
+        plt.figure(figsize=(6.,4.))
         plt.title("Cubic interpolation of solution on unique nodes")
         if isinstance(xeval, np.float):
             plt.plot(yeval, f[0], **kwarg)
