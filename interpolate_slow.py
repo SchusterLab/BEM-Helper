@@ -183,6 +183,8 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
     plt.figure(figsize=(6.,4.))
     plt.title("Unique nodes")
     plt.plot(xdata, ydata, '.k', alpha=0.5)
+    plt.xlim(np.min(xdata), np.max(xdata))
+    plt.ylim(np.min(ydata), np.max(ydata))
     plt.xlabel("{} (mm)".format(plot_axes[0]))
     plt.ylabel("{} (mm)".format(plot_axes[1]))
 
@@ -191,16 +193,28 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
     # but the cubic approximates the Maxwell data better.
     f = interpolate.griddata(zip(xdata, ydata), Udata, (X_eval, Y_eval) , method='cubic')
 
-    plt.figure(figsize=(7.,4.))
-    plt.title("Cubic interpolation of solution on unique nodes")
-    plt.pcolormesh(X_eval, Y_eval, f, cmap=cmap)
-    plt.colorbar()
-    if clim is not None:
-        plt.clim(clim)
-    plt.xlim(min(xeval), max(xeval))
-    plt.ylim(min(yeval), max(yeval))
-    plt.xlabel("{} (mm)".format(plot_axes[0]))
-    plt.ylabel("{} (mm)".format(plot_axes[1]))
+    if (1 in np.shape(xeval)) or (1 in np.shape(yeval)):
+        plt.figure(figsize=(7.,4.))
+        plt.title("Cubic interpolation of solution on unique nodes")
+        if 1 in np.shape(xeval):
+            plt.plot(xeval, f, **kwarg)
+            plt.xlim(min(xeval), max(xeval))
+            plt.xlabel("{} (mm)".format(plot_axes[0]))
+        else:
+            plt.plot(yeval, f, **kwarg)
+            plt.xlim(min(yeval), max(yeval))
+            plt.xlabel("{} (mm)".format(plot_axes[1]))
+    else:
+        plt.figure(figsize=(7.,4.))
+        plt.title("Cubic interpolation of solution on unique nodes")
+        plt.pcolormesh(X_eval, Y_eval, f, cmap=cmap)
+        plt.colorbar()
+        if clim is not None:
+            plt.clim(clim)
+        plt.xlim(min(xeval), max(xeval))
+        plt.ylim(min(yeval), max(yeval))
+        plt.xlabel("{} (mm)".format(plot_axes[0]))
+        plt.ylabel("{} (mm)".format(plot_axes[1]))
 
     return X_eval, Y_eval, f
 
