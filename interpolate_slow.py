@@ -160,7 +160,7 @@ def interpolate_BC(xdata, ydata, Udata, xeval, yeval, method='cubic'):
     else:
         return nan
 
-def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, clim=None, plot_axes='xy'):
+def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, clim=None, plot_axes='xy', **kwarg):
     """
     Compare the FEM data with the interpolated result on the BEM mesh.
     :param xdata: x-coordinates of the unique FEM nodes (from prepare_for_interpolation)
@@ -193,17 +193,17 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
     # but the cubic approximates the Maxwell data better.
     f = interpolate.griddata(zip(xdata, ydata), Udata, (X_eval, Y_eval) , method='cubic')
 
-    if (1 in np.shape(xeval)) or (1 in np.shape(yeval)):
+    if isinstance(xeval, np.float) or isinstance(yeval, np.float):
         plt.figure(figsize=(7.,4.))
         plt.title("Cubic interpolation of solution on unique nodes")
-        if 1 in np.shape(xeval):
-            plt.plot(xeval, f, **kwarg)
-            plt.xlim(min(xeval), max(xeval))
-            plt.xlabel("{} (mm)".format(plot_axes[0]))
-        else:
+        if isinstance(xeval, np.float):
             plt.plot(yeval, f, **kwarg)
             plt.xlim(min(yeval), max(yeval))
             plt.xlabel("{} (mm)".format(plot_axes[1]))
+        else:
+            plt.plot(xeval, f, **kwarg)
+            plt.xlim(min(xeval), max(xeval))
+            plt.xlabel("{} (mm)".format(plot_axes[0]))
     else:
         plt.figure(figsize=(7.,4.))
         plt.title("Cubic interpolation of solution on unique nodes")
