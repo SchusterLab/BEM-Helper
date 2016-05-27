@@ -160,7 +160,7 @@ def interpolate_BC(xdata, ydata, Udata, xeval, yeval, method='cubic'):
     else:
         return nan
 
-def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, clim=None, plot_axes='xy', **kwarg):
+def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, clim=None, plot_axes='xy', plot_mesh=False, **kwarg):
     """
     Compare the FEM data with the interpolated result on the BEM mesh.
     :param xdata: x-coordinates of the unique FEM nodes (from prepare_for_interpolation)
@@ -180,13 +180,14 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
 
     X_eval, Y_eval = meshgrid(xeval, yeval)
 
-    plt.figure(figsize=(6.,4.))
-    plt.title("Unique nodes")
-    plt.plot(xdata, ydata, '.k', alpha=0.5)
-    plt.xlim(np.min(xdata), np.max(xdata))
-    plt.ylim(np.min(ydata), np.max(ydata))
-    plt.xlabel("{} (mm)".format(plot_axes[0]))
-    plt.ylabel("{} (mm)".format(plot_axes[1]))
+    if plot_mesh:
+        plt.figure(figsize=(6.,4.))
+        plt.title("Unique nodes")
+        plt.plot(xdata, ydata, '.k', alpha=0.5)
+        plt.xlim(np.min(xdata), np.max(xdata))
+        plt.ylim(np.min(ydata), np.max(ydata))
+        plt.xlabel("{} (mm)".format(plot_axes[0]))
+        plt.ylabel("{} (mm)".format(plot_axes[1]))
 
     # There are different interpolation methods, and they can be compared with the method that
     # Maxwell uses to interpolate the data. In this case, the linear interpolation can be quite decent,
