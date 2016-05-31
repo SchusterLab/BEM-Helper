@@ -195,7 +195,8 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
     f = interpolate.griddata(zip(xdata, ydata), Udata, (X_eval, Y_eval) , method='cubic')
 
     if isinstance(xeval, np.float) or isinstance(yeval, np.float):
-        plt.figure(figsize=(6.,4.))
+        if plot_mesh:
+            plt.figure(figsize=(6.,4.))
         plt.title("Cubic interpolation of solution on unique nodes")
         if isinstance(xeval, np.float):
             plt.plot(yeval, f[0], **kwarg)
@@ -205,8 +206,13 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
             plt.plot(xeval, f[0], **kwarg)
             plt.xlim(min(xeval), max(xeval))
             plt.xlabel("{} (mm)".format(plot_axes[0]))
+
+        plt.ylabel("Potential (V)")
+        if clim is not None:
+            plt.ylim(clim)
     else:
-        plt.figure(figsize=(7.,4.))
+        if plot_mesh:
+            plt.figure(figsize=(7.,4.))
         plt.title("Cubic interpolation of solution on unique nodes")
         plt.pcolormesh(X_eval, Y_eval, f, cmap=cmap)
         plt.colorbar()
