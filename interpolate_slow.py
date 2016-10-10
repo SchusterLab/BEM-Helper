@@ -101,9 +101,12 @@ def get_maxwell_boundary_data(df):
     nodes = array(re.findall(r"\((.*?)\)", data[line_nr[1]-1])[0].split(', '), dtype=float)
     elem_solution = array(re.findall(r"\((.*?)\)", data[line_nr[2]-1])[0].split(', '), dtype=float)
 
-    nodes = nodes.reshape((nodes.shape[0]/3, 3))
+    nodes = nodes.reshape((int(nodes.shape[0]/3), 3))
 
-    return elements, nodes, elem_solution[3:]
+    line_nr = 90
+    bounding_box = np.array(re.findall(r"\((.*?)\)", data[line_nr - 1])[0].split(', '), dtype=float)
+
+    return elements, nodes, elem_solution[3:], bounding_box
 
 def prepare_for_interpolation(elements, nodes, elem_solution):
     """
@@ -126,7 +129,7 @@ def prepare_for_interpolation(elements, nodes, elem_solution):
     structured_elements = delete(elements, concatenate((where(elements==0)[0], where(elements==0)[0]-3, where(elements==0)[0]-2,
                                                         where(elements==0)[0]-1, where(elements==0)[0]+1)))[2:]
     # Each element consists of 6 points
-    structured_elements = structured_elements.reshape((structured_elements.shape[0]/6, 6))
+    structured_elements = structured_elements.reshape((int(structured_elements.shape[0]/6), 6))
     x = nodes[structured_elements-1,plot_coords[0]]
     y = nodes[structured_elements-1,plot_coords[1]]
 
@@ -192,7 +195,7 @@ def plot_BC(xdata, ydata, Udata, xeval=None, yeval=None, cmap=plt.cm.Spectral, c
     # There are different interpolation methods, and they can be compared with the method that
     # Maxwell uses to interpolate the data. In this case, the linear interpolation can be quite decent,
     # but the cubic approximates the Maxwell data better.
-    f = interpolate.griddata(zip(xdata, ydata), Udata, (X_eval, Y_eval) , method='cubic')
+    f = interpolate.griddata(list(zip(xdata, ydata)), Udata, (X_eval, Y_eval), method='cubic')
 
     if isinstance(xeval, np.float) or isinstance(yeval, np.float):
         if plot_mesh:
@@ -232,7 +235,7 @@ def plot_mesh(df):
     :return: None
     """
     # Load the data file
-    elements, nodes, elem_solution = get_maxwell_boundary_data(df)
+    elements, nodes, elem_solution, bounding_box = get_maxwell_boundary_data(df)
 
     # Detect what the orientation of this plane is:
     constant_coordinate = [len(unique(diff(nodes[:,k])))==1 for k in range(3)]
@@ -246,7 +249,7 @@ def plot_mesh(df):
                                                         where(elements==0)[0]-2, where(elements==0)[0]-1,
                                                         where(elements==0)[0]+1)))[2:]
     # Each element consists of 6 points
-    structured_elements = structured_elements.reshape((structured_elements.shape[0]/6, 6))
+    structured_elements = structured_elements.reshape((int(structured_elements.shape[0]/6), 6))
 
     plt.figure(figsize=(7.,5.))
     plt.title("Mesh elements for {:s}".format(os.path.split(df)[-1]))
@@ -267,8 +270,12 @@ def plot_mesh(df):
 
     plt.xlabel("{} (mm)".format(axes_labels[0]))
     plt.ylabel("{} (mm)".format(axes_labels[1]))
+
     # Make sure that the prefactors are right in + and - cases.
-    plt.xlim(array([0.95, 1.05])[int(np.min(x)<0)]*np.min(x),
-             array([0.95, 1.05])[int(np.max(x)>0)]*np.max(x))
-    plt.ylim(array([0.95, 1.05])[int(np.min(y)<0)]*np.min(y),
-             array([0.95, 1.05])[int(np.max(y)>0)]*np.max(y))
+    #plt.xlim(array([0.95, 1.05])[int(np.min(x)<0)]*np.min(x),
+    #         array([0.95, 1.05])[int(np.max(x)>0)]*np.max(x))
+    #plt.ylim(array([0.95, 1.05])[int(np.min(y)<0)]*np.min(y),
+    #         array([0.95, 1.05])[int(np.max(y)>0)]*np.max(y))
+
+    plt.xlim(bounding_box[0], bounding_box[1])
+    plt.ylim(bounding_box[2], bounding_box[3])
