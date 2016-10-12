@@ -1,9 +1,10 @@
 import numpy as np
 from tabulate import tabulate
+import time
 
 class Timer:
     def __init__(self):
-        print "Timer class initiated"
+        print("Timer class initiated")
         self.__t_i = None
         self.__t_f = None
         self.__elapsed = None
@@ -19,13 +20,16 @@ class Timer:
 
         self.__elapsed = self.__t_f - self.__t_i
 
-        print "Total time elapsed is {:.2e} s".format(self.__elapsed)
+        print("Total time elapsed is {:.2e} s".format(self.__elapsed))
+
+    def get_elapsed_time(self):
+        return self.__elapsed
 
     def save(self, save_string):
         setattr(self, save_string, self.__elapsed)
 
     def report(self):
-        X = self.__dict__.keys()
+        X = list(self.__dict__.keys())
         X1 = list()
         for x in X:
             if not(x.startswith('_')):
@@ -35,9 +39,9 @@ class Timer:
         # Sort the entries in the report according to the times.
         Z = sorted(zip(X1,Y), key=lambda a_entry: a_entry[1])
 
-        print tabulate(zip(np.array(Z)[:,0], np.array(np.array(Z)[:,1], dtype=float)),
+        print(tabulate(zip(np.array(Z)[:,0], np.array(np.array(Z)[:,1], dtype=float)),
                        headers=["Operation", 'Time (s)'],
-                       tablefmt="rst", floatfmt=".3f", numalign="center", stralign='left')
+                       tablefmt="rst", floatfmt=".3f", numalign="center", stralign='left'))
 
 class Residuals:
     def __init__(self, verbose):
@@ -50,7 +54,7 @@ class Residuals:
     def append_residual(self, residual):
         if self.verbose:
             if len(self.residuals)%self.report_every==1:
-                print "#{:d}\t{:.2e}".format(len(self.residuals), residual)
+                print("#{:d}\t{:.2e}".format(len(self.residuals), residual))
         self.residuals = append(self.residuals, array([residual]))
 
     def monitor_convergence(self, residual):
@@ -61,8 +65,8 @@ class Residuals:
             pct_change = 100.
 
         if pct_change < self.convergence_criterion:
-            print "Only {:.2f}% change in residuals over last {1} samples. Final tolerance {2} after {3} samples."\
-                .format(pct_change, int(self.look_back), residual, len(self.residuals))
+            print("Only {:.2f}% change in residuals over last {1} samples. Final tolerance {2} after {3} samples."\
+                .format(pct_change, int(self.look_back), residual, len(self.residuals)))
             return 0
 
     def calculate_residual(self, solution):
@@ -91,7 +95,7 @@ class ElementCoordinates:
     def get_two_variables(self, x, y, z):
         constant_coordinate = [len(np.unique(np.diff(k)))==1 for k in [x, y, z]]
         if self.verbose:
-            print "{:s} is constant".format(np.array(['x', 'y', 'z'])[np.array(constant_coordinate)][0])
+            print("{:s} is constant".format(np.array(['x', 'y', 'z'])[np.array(constant_coordinate)][0]))
         coordinates = np.arange(0,3)[np.logical_not(constant_coordinate)]
         non_constant = np.array([x,y,z])[coordinates]
         return non_constant[0], non_constant[1]

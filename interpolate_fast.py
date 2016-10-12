@@ -1,6 +1,5 @@
 import numpy as np
-import interpolate_slow
-import os
+from . import interpolate_slow
 
 def construct_vertices_from_coordinates(xy , uv):
     """
