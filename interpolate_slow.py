@@ -2,8 +2,11 @@ import re, os
 from numpy import *
 from matplotlib import pyplot as plt
 from scipy import interpolate
-from mpltools import color
 import numpy as np
+try:
+    from mpltools import color
+except:
+    pass
 
 def find_nearest(array,value):
     idx = (abs(array-value)).argmin()
